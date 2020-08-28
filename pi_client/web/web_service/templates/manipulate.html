@@ -1,0 +1,331 @@
+{% load staticfiles %}
+<!--<!DOCTYPE html>-->
+<html>
+<head>
+	<title></title>
+	<style type='text/css'>
+		body,html{
+		  height:100%;
+		  width: 100%;
+		}
+
+		.baseLayer {
+		  background: #eee;
+		  display:flex;
+		  align-items: center;
+		  justify-content:center;
+		  position: fixed;
+		  left:0px;top: 0px;
+		  width: 240px;
+		  height:280px;
+          transform:scale(1.0,1.0);
+		}
+
+        .car_dp{
+            width: 90%
+        }
+        .car_czL{
+            width: 20%;
+            position: absolute;
+            top: 43.6%;
+            left: 1%;
+        }
+        .car_czR{
+            width: 20%;
+            position: absolute;
+            top: 43.6%;
+            left: 78%;
+        }
+        .car_czq{
+            width: 18%;
+            position: absolute;
+            top: 43.5%;
+            left: 42%;
+        }
+		</style>
+        <script src="{% static 'js/jquery-2.1.1.min.js' %}" type="text/javascript"></script>
+
+
+</head>
+<body>
+{#<div class="baseLayer">#}
+{#   <img class="car_dp" src="{% static 'image/car/dp.png' %}" />#}
+{#    <img id="car_czL_1" class="car_czL" src="{% static 'image/car/czL.png' %}" />#}
+{#    <img id="car_czR_1" class="car_czR" src="{% static 'image/car/czR.png' %}" />#}
+{#    <img id="car_czq_1" class="car_czq" src="{% static 'image/car/czq.png' %}" />#}
+{#</div>#}
+</body> 
+</html>
+<script type='text/javascript'>
+		var body = document.body;
+        var edit =true ;
+        var selectElementId = '';
+        var y =0
+        var proportion = 1.0;
+
+		function SpareParts(layer,id){
+			this.layer=layer;
+			this.id_=id;
+
+			var baseLayerDate =layer.baseLayer;
+
+			for(var i=0;i<layer.length;i++){
+				createLayer(layer[i]);
+				addstyle(layer[i].layerStyle,layer[i].id);
+			}
+
+			var baseLayer = document.getElementById(id)
+			
+			var sparePartsIsMouseDown,initX,initY,height = baseLayer.offsetHeight,width = baseLayer.offsetWidth;
+
+			// this.createLayer = function(layerDate){
+			// }
+
+			function createLayer(layer){
+				var element = document.createElement(layer.layerDate.type);
+                element.setAttribute('id',layer.id);
+				for(var key in layer.layerDate) {
+					if (key=='type') continue;
+                    element.setAttribute(key,layer.layerDate[key]);
+				}
+				// var newText = document.createTextNode(layerDate['id']);
+				// 	div.appendChild(newText); //将文本添加到P标签中#}
+                if(layer.fatherId!=''){
+                    var fatherElement = document.getElementById(layer.fatherId)
+                    fatherElement.insertBefore(element,fatherElement.lastChild);
+                }else{
+                    body.insertBefore(element,body.lastChild);
+                }
+			}
+
+			function addstyle(layerStyle,id){
+				var div = document.getElementById(id)
+				for(var key in layerStyle) {
+					div.style.setProperty(key, layerStyle[key], 'important');
+				}
+			}
+
+            baseLayer.addEventListener('mousedown', function(e) {
+                if (selectElementId =='') {
+                    sparePartsIsMouseDown = true;
+                    document.body.classList.add('no-select');
+                    initX = e.offsetX;
+                    initY = e.offsetY;
+                    y=initY;
+                    selectElementId=id;
+                    console.log("选中div了");
+                }
+            })
+
+			document.addEventListener('mousemove', function(e) {
+                if (sparePartsIsMouseDown && edit) {
+                    var cx = e.clientX - initX,
+                        cy = e.clientY - initY;
+                    if (cx < 0) {
+                        cx = 0;
+                    }
+                    if (cy < 0) {
+                        cy = 0;
+                    }
+                    if (window.innerWidth - e.clientX + initX < width) {
+                        cx = window.innerWidth - width;
+                    }
+                    if (e.clientY > window.innerHeight - height+ initY) {
+                        cy = window.innerHeight - height;
+                    }
+                    baseLayer.style.left = cx + 'px';
+                    baseLayer.style.top = cy + 'px';
+                }
+            })
+
+            baseLayer.addEventListener('mouseup', function() {
+                if (selectElementId ==id) {
+                    sparePartsIsMouseDown = false;
+                    document.body.classList.remove('no-select');
+                    console.log("取消选中div");
+                    selectElementId='';
+                }
+			})
+		}
+
+		var layer1 = [{'layerName':'baseLayer','fatherId':'','id':'chassis1',
+                            'layerDate':{'type':'div','class':'baseLayer','name':''},
+                            'layerStyle':{'width':'240px','height':'280px','left':'0','top':'0','transform':'transform:scale(1.0,1.0)'}
+                     },{'layerName':'car_pb','fatherId':'chassis1','id':'chassis1_img_dp',
+                            'layerDate':{'type':'img','class':'car_dp','name':'','src':"{% static 'image/car/dp.png' %}"},
+                            'layerStyle':{'width':'90%'}
+                     },{'layerName':'car_L','fatherId':'chassis1','id':'chassis1_img_czL',
+                            'layerDate':{'type':'img','class':'car_czL','name':'','src':"{% static 'image/car/czL.png' %}"},
+                            'layerStyle':{}
+                     },{'layerName':'car_R','fatherId':'chassis1','id':'chassis1_img_czR',
+                            'layerDate':{'type':'img','class':'car_czR','name':'','src':"{% static 'image/car/czR.png' %}"},
+                            'layerStyle':{}
+                     },{'layerName':'car_Z','fatherId':'chassis1','id':'chassis1_img_czq',
+                            'layerDate':{'type':'img','class':'car_czq','name':'','src':"{% static 'image/car/czq.png' %}"},
+                            'layerStyle':{}
+            }
+        ];
+		var layer2 = [{'layerName':'baseLayer',
+		'layerDate':{'type':'div','id':'chassis2','class':'baseLayer','name':''},
+		'layerStyle':{'width':'200px','height':'200px','left':'400px','top':'400px'}
+	}]
+
+	    var layer3 = [{'layerName':'baseLayer',
+		'layerDate':{'type':'div','id':'chassis3','class':'baseLayer','name':''},
+		'layerStyle':{'width':'200px','height':'200px','left':'400px','top':'400px'}
+	}]
+
+
+        CarSpare('chassis1')
+
+		//var chassis2 = new SpareParts(layer2,'chassis2');
+		//var chassis3 = new SpareParts(layer3,'chassis3');
+        function CarSpare(id) {
+            var chassis1 = new SpareParts(layer1,id);
+            var carSparePartsButtonL = new CarSparePartsButton(id,"czL");
+            var carSparePartsButtonR = new CarSparePartsButton(id,"czR");
+            var carSparePartsButtonq = new CarSparePartsButton(id,"czq");
+            var i =0;
+            setInterval(function () {
+                var yl=0.0,yr=0.0,ruler_yl=1.0,ruler_yr=1.0,old_yl=0.0,old_yr=0.0;
+                ruler_yl =carSparePartsButtonL.getRulerYl();
+                ruler_yr =carSparePartsButtonR.getRulerYr();
+                console.log('ruler_yl'+ruler_yl + 'ruler_yr'+ruler_yr);
+                if (carSparePartsButtonL.getYl()!=0.0&&carSparePartsButtonL.getIsMouseDown()){
+                    yl=carSparePartsButtonL.getYl();
+                }
+                if (carSparePartsButtonR.getYr()!=0.0&&carSparePartsButtonR.getIsMouseDown()){
+                    yr=carSparePartsButtonR.getYr();
+                }
+                if (carSparePartsButtonq.getYl()!=0.0&&carSparePartsButtonq.getIsMouseDown()){
+                    yl=carSparePartsButtonq.getYl();
+                }
+                if (carSparePartsButtonq.getYr()!=0.0&&carSparePartsButtonq.getIsMouseDown()){
+                    yr=carSparePartsButtonq.getYr();
+                }
+                console.log('yl'+yl + 'yr'+yr);
+                if((old_yl!=yl || old_yr!=yr) && (carSparePartsButtonL.getIsMouseDown() || carSparePartsButtonR.getIsMouseDown() || carSparePartsButtonq.getIsMouseDown())){
+                    i=0;
+                    //$.get("/car/carMove/", {yr: yr, yl: yl, ruler_yr: ruler_yl, ruler_yl: ruler_yr, addresss: '{{addresss}}'}, null);
+                    $.get("/manipulateParameters/getAddTo/", {'yr': yr, 'yl': yl, 'ruler_yr': ruler_yl, 'ruler_yl': ruler_yr, 'addresssStr':'{{addresssStr}}','modularIdentification':'L298N_1','algorithmSign':'L298N'}, null);
+                }else {
+                    i++;
+                    if (i<2){
+                    //$.get("/car/carMove/",{ yr: 0.0, yl: 0.0,ruler_yr: 1.0, ruler_yl: 1.0,addresss:'{{addresss}}'},null);
+                    $.get("/manipulateParameters/getAddTo/",{ 'yr': 0.0, 'yl': 0.0,'ruler_yr': 1.0, 'ruler_yl': 1.0,'addresssStr':'{{addresssStr}}','modularIdentification':'L298N_1','algorithmSign':'L298N'},null);
+                    }
+                }
+                old_yl = yl;
+                old_yr = yr;
+            }, 100);
+        }
+
+        function CarSparePartsButton(chassis,type) {
+            var chassis1 = document.getElementById(chassis);
+            var img_dp = document.getElementById(chassis+'_img_dp');
+            var img = document.getElementById(chassis+'_img_'+type);
+            var max_y = img_dp.offsetHeight;
+            var isMouseDown=false, car_initY, height = img.offsetHeight;
+            var topL='';
+            var topR='';
+            var top='';
+            var yl=0.0;
+            var yr=0.0;
+            var ruler_yl=max_y/2;
+            var ruler_yr=max_y/2;
+
+            img.addEventListener('mouseover', function (e) {
+                isMouseDown = true;
+                document.body.classList.add('no-select');
+                car_initY = e.offsetY;
+                selectElementId = chassis+'_img_'+type;
+                top =img.style.top
+                if(type=='czq'){
+                    var imgCzL = document.getElementById(chassis+'_img_czL');
+                    topL =imgCzL.style.top;
+                    var imgCzR = document.getElementById(chassis+'_img_czR');
+                    topR =imgCzR.style.top;
+                }
+            })
+
+            document.addEventListener('mousemove', function (e) {
+                if (isMouseDown) {
+                    var cy = e.clientY - chassis1.offsetTop - car_initY;
+                    if (cy < 0) {
+                        cy = 0;
+                    } else if (cy > max_y) {
+                        cy = max_y;
+                    }
+                    if (e.clientY > window.innerHeight - height + car_initY) {
+                        cy = window.innerHeight - height;
+                    }
+                    if (type=='czq') {
+                        var imgCzL = document.getElementById(chassis+'_img_czL');
+                        imgCzL.style.top = cy - 3*proportion + 'px';
+                        var imgCzR = document.getElementById(chassis+'_img_czR');
+                        imgCzR.style.top = cy - 3*proportion + 'px';
+                    }
+                    img.style.top = cy + 'px';
+
+                    if (type=='czL'||type=='czq'){
+                        if (cy<ruler_yl){
+                            yl=(ruler_yl-cy);
+                        }else if (cy==ruler_yl){
+                            yl=0.0;
+                        } else{
+                            yl = (cy-ruler_yl)*-1.0;
+                        }
+                    }
+                    if (type=='czR'||type=='czq'){
+                        if (cy<ruler_yr){
+                            yr=ruler_yr-cy;
+                        }else if (cy==ruler_yr){
+                            yr=0.0;
+                        } else{
+                            yr = (cy-ruler_yr)*-1.0;
+                        }
+                    }
+                    //console.log(ruler_yr);
+                    //$.get("/car/carMove/", {yr: yr, yl: yl, ruler_yr: ruler_yl, ruler_yl: ruler_yr, addresss: '{{addresss}}'}, null);
+                }
+            })
+
+            img.addEventListener('mouseout', function () {
+                isMouseDown = false;
+                document.body.classList.remove('no-select');
+                selectElementId = ''
+                img.style.top=top;
+                if (type=='czq'){
+                    var imgCzL = document.getElementById(chassis+'_img_czL');
+                    imgCzL.style.top =topL;
+                    var imgCzR = document.getElementById(chassis+'_img_czR');
+                    imgCzR.style.top =topR;
+                }
+                //setTimeout(stop, 30); //停止延迟30ms执行，保证不会被其他覆盖
+                })
+
+            //function stop() {
+            //    $.get("/car/carMove/",{ yr: 0.0, yl: 0.0,ruler_yr: 1.0, ruler_yl: 1.0,addresss:'{{addresss}}'},null);
+            // }
+
+            this.getIsMouseDown= function () {
+                return isMouseDown;
+            }
+
+            this.getRulerYl= function () {
+                return ruler_yl;
+            }
+
+            this.getRulerYr= function () {
+                return ruler_yr;
+            }
+
+            this.getYr= function () {
+                return yr;
+            }
+
+            this.getYl= function () {
+                return yl;
+            }
+        }
+        </script>
